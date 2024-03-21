@@ -1,20 +1,18 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Home } from './src/screens';
+import { useFonts } from 'expo-font';
+// import AppLoading from 'expo-app-loading';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+  const [fontsLoaded, fontError] = useFonts({
+    'matt-bl': require('./assets/fonts/Mattone-Black.otf'),
+    'matt-b': require('./assets/fonts/Mattone-Bold.otf'),
+    'matt': require('./assets/fonts/Mattone-Regular.otf'),
+    'unblock': require('./assets/fonts/Unblock.ttf'),
+    'inter': require('./assets/fonts/Inter-Regular.ttf'),
+  });
+  if (!fontsLoaded) {
+    return null
+  }
+  return <Home />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
