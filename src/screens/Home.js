@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     minWidth: "92.7%",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    borderBottomWidth: 0.7,
-    borderColor: "#B9B9BB",
+    // borderBottomWidth: 0.7,
+    // borderColor: "#B9B9BB",
   },
 });
