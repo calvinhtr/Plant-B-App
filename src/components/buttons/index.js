@@ -1,8 +1,5 @@
-import SimpleButton from './SimpleButton';
-import PressableButton from './PressableButton';
-import TouchableButton from './TouchableButton';
-import AnimatedButton from './AnimatedButton';
-import DefaultButton from './DefaultButton'
-import SwitchButton from './Switch'
+import DefaultButton from "./DefaultButton";
+import SwitchButton from "./Switch";
+import OtherButton from "./OtherButton";
 
-export { SimpleButton, PressableButton, TouchableButton, AnimatedButton, DefaultButton, SwitchButton };
+export { DefaultButton, SwitchButton, OtherButton };

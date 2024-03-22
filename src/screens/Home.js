@@ -1,12 +1,31 @@
-import { React, useEffect, useCallback } from "react";
+import { React, useEffect, useCallback, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View, Text, Image, Dimensions } from "react-native";
-import { DefaultButton, SwitchButton } from "../components/buttons";
+import {
+  DefaultButton,
+  SwitchButton,
+  OtherButton,
+} from "../components/buttons";
 import { Spacer, VerticalSpacer } from "../components/spacer";
 import Colors from "../../constants/Colors";
 
 const Home = () => {
-  const dimensions = Dimensions.get("window");
+  const { height, width } = Dimensions.get("window");
+  const [isAuto, setIsAuto] = useState(false);
+  const [pumpOn, setPump] = useState(false);
+  const [lightOn, setLight] = useState(false);
+  const toggleAuto = () => {
+    // Toggle isAuto state
+    setIsAuto((previousState) => !previousState);
+
+    // Set other states to false
+    setPump(false);
+    setLight(false);
+  };
+  const handleButtonPress = () => {
+    // Handle button press logic here
+    console.log("Button pressed!");
+  };
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -23,12 +42,19 @@ const Home = () => {
             style={styles.logo}
             source={require("../../assets/images/frog_logo.png")}
           />
-          <Text style={{ fontFamily: 'unblock', paddingTop: 12, paddingLeft: 5, fontSize: 18 }}>
+          <Text
+            style={{
+              fontFamily: "unblock",
+              paddingTop: 12,
+              paddingLeft: 5,
+              fontSize: 18,
+            }}
+          >
             PLANT B
           </Text>
         </View>
 
-        <Text style={{ fontSize: 32, fontFamily: 'matt' }}>Control Panel</Text>
+        <Text style={{ fontSize: 32, fontFamily: "matt" }}>Control Panel</Text>
         <View
           style={{
             flexDirection: "row",
@@ -38,13 +64,17 @@ const Home = () => {
         >
           <Spacer hSize={10}></Spacer>
           <View style={{ flexDirection: "column", justifyContent: "center" }}>
-            <Text style= {[styles.sensorTitle, {fontWeight: 400,}]}>Moisture</Text>
-            <Text style={[styles.sensorValue, {fontWeight: 700 }]}>40%</Text>
+            <Text style={[styles.sensorTitle, { fontWeight: 400 }]}>
+              Moisture
+            </Text>
+            <Text style={[styles.sensorValue, { fontWeight: 700 }]}>40%</Text>
 
             <Spacer vSize={10}></Spacer>
 
-            <Text style={[styles.sensorTitle, {fontWeight: 400}]}>Brightness</Text>
-            <Text style={[styles.sensorValue, {fontWeight: 700}]}>80%</Text>
+            <Text style={[styles.sensorTitle, { fontWeight: 400 }]}>
+              Brightness
+            </Text>
+            <Text style={[styles.sensorValue, { fontWeight: 700 }]}>80%</Text>
           </View>
           <Image
             style={[styles.frog]}
@@ -65,8 +95,21 @@ const Home = () => {
         }}
       >
         <Spacer hSize={5}></Spacer>
-        <Text style={{ paddingVertical: 14, paddingLeft: 10, fontFamily: 'inter', fontSize: 17, color: '#5D5B57' }}>Auto Mode</Text>
-        <SwitchButton></SwitchButton>
+        <Text
+          style={{
+            paddingVertical: 14,
+            paddingLeft: 10,
+            fontFamily: "inter",
+            fontSize: 17,
+            color: "#35322D",
+          }}
+        >
+          Auto Mode
+        </Text>
+        <SwitchButton
+          isEnabled={isAuto}
+          toggleSwitch={toggleAuto}
+        ></SwitchButton>
         <Spacer hSize={5}></Spacer>
       </View>
 
@@ -74,56 +117,118 @@ const Home = () => {
 
       {/* This creates all buttons under 'Watering' */}
       <View style={{ flexDirection: "column", alignItems: "left" }}>
-        <Text paddingHorizontal={10}>WATERING</Text>
+        <Text paddingHorizontal={10} style={{ color: "#838385" }}>
+          WATERING
+        </Text>
         <Spacer vSize={5}></Spacer>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <DefaultButton
-            icon={require('../../assets/images/calendar.png')}
-            title={"Watering Frequency"}
-            currText={"Every 10 days"}
-          />
-          <Spacer hSize={5}></Spacer>
-          <DefaultButton
-            icon={require('../../assets/images/cup.png')}
-            title={"Watering Amount"}
-            currText={"50 ml"}
-          />
-        </View>
+        {isAuto ? (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <DefaultButton
+              icon={require("../../assets/images/calendar.png")}
+              title={"Watering Frequency"}
+              currText={"Every 10 days"}
+            />
+            <Spacer hSize={5}></Spacer>
+            <DefaultButton
+              icon={require("../../assets/images/cup.png")}
+              title={"Watering Amount"}
+              currText={"50 ml"}
+            />
+          </View>
+        ) : (
+          <View style={{ flexDirection: "column" }}>
+            <View style={styles.manualButtonSet}>
+              <Spacer hSize={5}></Spacer>
+              <Text
+                style={{
+                  paddingVertical: 14,
+                  paddingLeft: 10,
+                  fontFamily: "inter",
+                  fontSize: 17,
+                  color: "#35322D",
+                }}
+              >
+                Pump
+              </Text>
+              <SwitchButton
+                isEnabled={pumpOn}
+                toggleSwitch={() => setPump((previousState) => !previousState)}
+              ></SwitchButton>
+              <Spacer hSize={5}></Spacer>
+            </View>
+            <OtherButton
+              title="Water amount"
+              onPress={handleButtonPress}
+            />
+          </View>
+        )}
       </View>
 
       <VerticalSpacer size={5} />
 
       {/* This creates all buttons under 'Lighting' */}
+
       <View style={{ flexDirection: "column", alignItems: "left" }}>
-        <Text paddingHorizontal={10}>LIGHTING</Text>
+        <Text paddingHorizontal={10} style={{ color: "#838385" }}>
+          LIGHTING
+        </Text>
         <Spacer vSize={5}></Spacer>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <DefaultButton
-            icon={require('../../assets/images/lightbulb.png')}
-            title={"Light Sensitivity"}
-            currText={"Medium"}
-          />
-          <Spacer hSize={5}></Spacer>
-          <DefaultButton
-            icon={require('../../assets/images/palette.png')}
-            title={"Light Colour"}
-            currText={"F5D418"}
-          />
-        </View>
+        {isAuto ? (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <DefaultButton
+              icon={require("../../assets/images/lightbulb.png")}
+              title={"Light Sensitivity"}
+              currText={"Medium"}
+            />
+            <Spacer hSize={5}></Spacer>
+            <DefaultButton
+              icon={require("../../assets/images/palette.png")}
+              title={"Light Colour"}
+              currText={"F5D418"}
+            />
+          </View>
+        ) : (
+          <View style={{ flexDirection: "column" }}>
+            <View style={styles.manualButtonSet}>
+              <Spacer hSize={5}></Spacer>
+              <Text
+                style={{
+                  paddingVertical: 14,
+                  paddingLeft: 10,
+                  fontFamily: "inter",
+                  fontSize: 17,
+                  color: "#5D5B57",
+                }}
+              >
+                Light
+              </Text>
+              <SwitchButton
+                isEnabled={lightOn}
+                toggleSwitch={() => setLight((previousState) => !previousState)}
+              ></SwitchButton>
+              <Spacer hSize={5}></Spacer>
+            </View>
+            <OtherButton title="Light colour" onPress={handleButtonPress} />
+          </View>
+        )}
+
         <Spacer vSize={5}></Spacer>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <DefaultButton
-            icon={require('../../assets/images/clock.png')}
-            title={"Start Time"}
-            currText={"7:00 AM"}
-          />
-          <Spacer hSize={5}></Spacer>
-          <DefaultButton
-            icon={require('../../assets/images/timer.png')}
-            title={"Lighting Length"}
-            currText={"10 hr"}
-          />
-        </View>
+
+        {isAuto ? (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <DefaultButton
+              icon={require("../../assets/images/clock.png")}
+              title={"Start Time"}
+              currText={"7:00 AM"}
+            />
+            <Spacer hSize={5}></Spacer>
+            <DefaultButton
+              icon={require("../../assets/images/timer.png")}
+              title={"Lighting Length"}
+              currText={"10 hr"}
+            />
+          </View>
+        ) : null}
       </View>
 
       {/* <VerticalSpacer size={15} />
@@ -142,9 +247,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "top",
     paddingHorizontal: 15,
-    paddingTop: 30
+    paddingTop: 30,
   },
   wrapper: {
     borderRadius: 30,
@@ -162,14 +267,24 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   sensorTitle: {
-    fontFamily: 'inter',
+    fontFamily: "inter",
     fontSize: 12,
-    color: '#5D5B57',
+    color: "#5D5B57",
   },
   sensorValue: {
-    fontFamily: 'inter', 
+    fontFamily: "inter",
     fontSize: 36,
-    color: '#35322D',
-    includeFontPadding: false
-  }
+    color: "#35322D",
+    includeFontPadding: false,
+  },
+  manualButtonSet: {
+    flexDirection: "row",
+    display: "flex",
+    backgroundColor: "white",
+    minWidth: "92.7%",
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomWidth: 0.7,
+    borderColor: "#B9B9BB",
+  },
 });

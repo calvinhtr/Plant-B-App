@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, Image } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { Spacer } from "../spacer";
 
 const DefaultButton = ({ icon, title, currText }) => {
