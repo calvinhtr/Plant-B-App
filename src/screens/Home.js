@@ -1,6 +1,14 @@
 import { React, useEffect, useCallback, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, Text, Image, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  Dimensions,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import {
   DefaultButton,
   SwitchButton,
@@ -8,12 +16,31 @@ import {
 } from "../components/buttons";
 import { Spacer, VerticalSpacer } from "../components/spacer";
 import Colors from "../../constants/Colors";
+import { WheelPicker, FewPicker } from "../components/modals";
 
 const Home = () => {
+  // Initialize state vars
   const { height, width } = Dimensions.get("window");
   const [isAuto, setIsAuto] = useState(false);
+
   const [pumpOn, setPump] = useState(false);
   const [lightOn, setLight] = useState(false);
+
+  const [showWateringFreq, setShowWateringFreq] = useState(false);
+  const [waterFreq, setWaterFreq] = useState(7);
+
+  const [showWaterAmt, setShowWaterAmt] = useState(false);
+  const [waterAmt, setWaterAmt] = useState(50);
+
+  const [showLightSen, setShowLightSen] = useState(false);
+  const [lightSen, setLightSen] = useState('Medium');
+
+  const [showLightingHr, setShowLightingHr] = useState(false);
+  const [lightingHr, setLightingHr] = useState(16);
+
+  const [showWaterAmtManual, setShowWaterAmtManual] = useState(false);
+  const [waterAmtManual, setWaterAmtManual] = useState(50);
+
   const toggleAuto = () => {
     // Toggle isAuto state
     setIsAuto((previousState) => !previousState);
@@ -22,13 +49,70 @@ const Home = () => {
     setPump(false);
     setLight(false);
   };
-  const handleButtonPress = () => {
-    // Handle button press logic here
-    console.log("Button pressed!");
-  };
+  const numbersArray = [];
+  for (let i = 1; i <= 300; i++) {
+    numbersArray.push(i);
+  }
+  const hrsArray = [];
+  for (let i = 1; i <= 24; i++) {
+    hrsArray.push(i);
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
+      <WheelPicker
+        title={"Watering Frequency"}
+        leftText={"Every"}
+        rightText={"days"}
+        values={numbersArray}
+        showModal={showWateringFreq}
+        setShowModal={setShowWateringFreq}
+        valueVar={waterFreq}
+        setValueVar={setWaterFreq}
+      />
+      <WheelPicker
+        title={"Water Amount"}
+        leftText={""}
+        rightText={"ml"}
+        values={numbersArray}
+        showModal={showWaterAmt}
+        setShowModal={setShowWaterAmt}
+        valueVar={waterAmt}
+        setValueVar={setWaterAmt}
+      />
+      <WheelPicker
+        title={"Lighting Length"}
+        leftText={""}
+        rightText={"hr per day"}
+        values={hrsArray}
+        showModal={showLightingHr}
+        setShowModal={setShowLightingHr}
+        valueVar={lightingHr}
+        setValueVar={setLightingHr}
+      />
+      <WheelPicker
+        title={"Water Amount"}
+        leftText={""}
+        rightText={"ml"}
+        values={numbersArray}
+        showModal={showWaterAmtManual}
+        setShowModal={setShowWaterAmtManual}
+        valueVar={waterAmtManual}
+        setValueVar={setWaterAmtManual}
+        buttonText="Water now"
+      />
+      <FewPicker
+        title={"Light Sensitivity"}
+        leftText={""}
+        rightText={"ml"}
+        values={numbersArray}
+        showModal={showLightSen}
+        setShowModal={setShowLightSen}
+        valueVar={lightSen}
+        setValueVar={setLightSen}
+      />
+
       {/* Create the logo area */}
       <View
         style={{
@@ -126,13 +210,17 @@ const Home = () => {
             <DefaultButton
               icon={require("../../assets/images/calendar.png")}
               title={"Watering Frequency"}
-              currText={"Every 10 days"}
+              currText={"Every " + waterFreq + " days"}
+              modalVar={showWateringFreq}
+              setModalVar={setShowWateringFreq}
             />
             <Spacer hSize={5}></Spacer>
             <DefaultButton
               icon={require("../../assets/images/cup.png")}
               title={"Watering Amount"}
-              currText={"50 ml"}
+              currText={waterAmt + " ml"}
+              modalVar={showWaterAmt}
+              setModalVar={setShowWaterAmt}
             />
           </View>
         ) : (
@@ -156,10 +244,7 @@ const Home = () => {
               ></SwitchButton>
               <Spacer hSize={5}></Spacer>
             </View>
-            <OtherButton
-              title="Water amount"
-              onPress={handleButtonPress}
-            />
+            <OtherButton title="Water amount" onPress={() => setShowWaterAmtManual(true)} />
           </View>
         )}
       </View>
@@ -178,7 +263,9 @@ const Home = () => {
             <DefaultButton
               icon={require("../../assets/images/lightbulb.png")}
               title={"Light Sensitivity"}
-              currText={"Medium"}
+              currText={lightSen}
+              modalVar={showLightSen}
+              setModalVar={setShowLightSen}
             />
             <Spacer hSize={5}></Spacer>
             <DefaultButton
@@ -208,7 +295,7 @@ const Home = () => {
               ></SwitchButton>
               <Spacer hSize={5}></Spacer>
             </View>
-            <OtherButton title="Light colour" onPress={handleButtonPress} />
+            <OtherButton title="Light colour" onPress={() => console.log("Light colour")} />
           </View>
         )}
 
@@ -225,17 +312,13 @@ const Home = () => {
             <DefaultButton
               icon={require("../../assets/images/timer.png")}
               title={"Lighting Length"}
-              currText={"10 hr"}
+              currText={lightingHr + " hr"}
+              modalVar={showLightingHr}
+              setModalVar={setShowLightingHr}
             />
           </View>
         ) : null}
       </View>
-
-      {/* <VerticalSpacer size={15} />
-      <AnimatedButton
-        title={'Animated Button'}
-        message={'Animated Button clicked!'}
-      /> */}
     </View>
   );
 };

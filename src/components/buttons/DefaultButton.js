@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import { Spacer } from "../spacer";
 
-const DefaultButton = ({ icon, title, currText }) => {
+const DefaultButton = ({ icon, title, currText, modalVar, setModalVar }) => {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -17,7 +17,7 @@ const DefaultButton = ({ icon, title, currText }) => {
           minWidth: '45%'
         },
       ]}
-      onPress={() => console.log("Button pressed")}
+      onPress={() => {setModalVar(true); console.log(modalVar)}}
     >
       <View style={styles.button}>
         <Image source={icon} style={{width: 45, height: 45}}/>

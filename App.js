@@ -10,6 +10,8 @@ export default function App() {
     'matt': require('./assets/fonts/Mattone-Regular.otf'),
     'unblock': require('./assets/fonts/Unblock.ttf'),
     'inter': require('./assets/fonts/Inter-Regular.ttf'),
+    'inter-sb': require('./assets/fonts/Inter-SemiBold.ttf'),
+    'inter-b': require('./assets/fonts/Inter-Bold.ttf'),
   });
   if (!fontsLoaded) {
     return null
