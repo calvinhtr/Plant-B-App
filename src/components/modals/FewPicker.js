@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Modal, TouchableOpacity } from "react-native";
 import { React, useState } from "react";
 import { Spacer } from "../spacer";
 import { Ionicons } from "@expo/vector-icons";
+import { fetchData } from "../../utils/utils";
 
 const FewPicker = ({
   title,
@@ -10,6 +11,10 @@ const FewPicker = ({
   setShowModal,
   valueVar,
   setValueVar,
+  ipAddress,
+  setMoisture,
+  setLight,
+  endpoint = "",
   buttonText = "Done",
 }) => {
   let [temp, setTemp] = useState(valueVar);
@@ -28,7 +33,7 @@ const FewPicker = ({
       <Modal animationType="slide" transparent={true} visible={showModal}>
         <View
           style={{
-            height: "50%",
+            height: 440,
             marginTop: "auto",
             backgroundColor: "#F6F6F6",
             borderTopLeftRadius: 13,
@@ -119,6 +124,8 @@ const FewPicker = ({
               onPress={() => {
                 setShowModal(false);
                 setValueVar(temp);
+                const newIp = ipAddress + "/" + endpoint;
+                fetchData(newIp, setMoisture, setLight);
               }}
             >
               <Text

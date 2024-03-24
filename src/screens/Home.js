@@ -1,6 +1,15 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, Text, Image, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  Dimensions,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import {
   DefaultButton,
   SwitchButton,
@@ -14,6 +23,7 @@ import {
   ColorPicker,
   TimePicker,
 } from "../components/modals";
+import { fetchData } from "../utils/utils";
 
 const Home = () => {
   // Initialize state vars
@@ -38,9 +48,6 @@ const Home = () => {
   const [showWaterAmtManual, setShowWaterAmtManual] = useState(false);
   const [waterAmtManual, setWaterAmtManual] = useState(50);
 
-  const [showLightTime, setShowLightTime] = useState(false);
-  const [lightTime, setLightTime] = useState(5);
-
   const [red, setRed] = useState(150);
   const [green, setGreen] = useState(0);
   const [blue, setBlue] = useState(30);
@@ -51,6 +58,7 @@ const Home = () => {
   const [blueManual, setBlueManual] = useState(30);
   const [showColorManual, setShowColorManual] = useState(false);
 
+  const [showLightTime, setShowLightTime] = useState(false);
   const [lightHr, setLightHr] = useState("6");
   const [lightMin, setLightMin] = useState("00");
   const [lightAMPM, setLightAMPM] = useState("AM");
@@ -58,9 +66,17 @@ const Home = () => {
   const [currMoisture, setCurrMoisture] = useState(40);
   const [currBrightness, setCurrBrightness] = useState(80);
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [ipAddress, setIpAddress] = useState(
+    "http://192.168.43.254"
+  );
+  // http://192.168.43.254
+
   const toggleAuto = () => {
     // Toggle isAuto state
     setIsAuto((previousState) => !previousState);
+    const address = isAuto ? (ipAddress + "/autoOff") : (ipAddress + "/autoOn")
+    fetchData(address);
 
     // Set other states to false
     setPump(false);
@@ -111,8 +127,9 @@ const Home = () => {
       : "";
 
   const hexColor = convertToHex(red, green, blue);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <StatusBar style="auto" backgroundColor={statusColor} />
       <WheelPicker
         title={"Watering Frequency"}
@@ -123,6 +140,10 @@ const Home = () => {
         setShowModal={setShowWateringFreq}
         valueVar={waterFreq}
         setValueVar={setWaterFreq}
+        ipAddress={ipAddress}
+        setMoisture={setCurrMoisture}
+        setLight={setCurrBrightness}
+        // endpoint={"setWaterInt"}
       />
       <WheelPicker
         title={"Water Amount"}
@@ -133,6 +154,10 @@ const Home = () => {
         setShowModal={setShowWaterAmt}
         valueVar={waterAmt}
         setValueVar={setWaterAmt}
+        ipAddress={ipAddress}
+        setMoisture={setCurrMoisture}
+        setLight={setCurrBrightness}
+        // endpoint={"setWaterAmt"}
       />
       <WheelPicker
         title={"Lighting Length"}
@@ -143,6 +168,10 @@ const Home = () => {
         setShowModal={setShowLightingHr}
         valueVar={lightingHr}
         setValueVar={setLightingHr}
+        ipAddress={ipAddress}
+        setMoisture={setCurrMoisture}
+        setLight={setCurrBrightness}
+        // endpoint={"setLightHours"}
       />
       <WheelPicker
         title={"Water Amount"}
@@ -154,6 +183,10 @@ const Home = () => {
         valueVar={waterAmtManual}
         setValueVar={setWaterAmtManual}
         buttonText="Water now"
+        ipAddress={ipAddress}
+        setMoisture={setCurrMoisture}
+        setLight={setCurrBrightness}
+        // endpoint={"setWaterAmt"}
       />
       <FewPicker
         title={"Light Intensity"}
@@ -164,6 +197,10 @@ const Home = () => {
         setShowModal={setShowLightInt}
         valueVar={lightInt}
         setValueVar={setLightInt}
+        ipAddress={ipAddress}
+        setMoisture={setCurrMoisture}
+        setLight={setCurrBrightness}
+        // endpoint={"setWaterAmt"}
       />
       <ColorPicker
         title={"Light Colour"}
@@ -175,6 +212,10 @@ const Home = () => {
         setBlueVar={setBlue}
         greenVar={green}
         setGreenVar={setGreen}
+        ipAddress={ipAddress}
+        setMoisture={setCurrMoisture}
+        setLight={setCurrBrightness}
+        endpoint={"ledR"}
       />
       <ColorPicker
         title={"Light Colour"}
@@ -186,6 +227,9 @@ const Home = () => {
         setBlueVar={setBlueManual}
         greenVar={greenManual}
         setGreenVar={setGreenManual}
+        ipAddress={ipAddress}
+        setMoisture={setCurrMoisture}
+        setLight={setLight}
       />
       <TimePicker
         title={"Start Time"}
@@ -200,6 +244,10 @@ const Home = () => {
         setMinVar={setLightMin}
         amPMVar={lightAMPM}
         setAMPMVar={setLightAMPM}
+        ipAddress={ipAddress}
+        setMoisture={setCurrMoisture}
+        setLight={setCurrBrightness}
+        // endpoint={"ledR"}
       />
 
       {/* Create the logo area */}
@@ -208,6 +256,7 @@ const Home = () => {
           flexDirection: "column",
           justifyContent: "left",
           display: "flex",
+          width: "87%",
         }}
       >
         <View style={{ flexDirection: "row" }}>
@@ -227,7 +276,31 @@ const Home = () => {
           </Text>
         </View>
 
-        <Text style={{ fontSize: 32, fontFamily: "matt" }}>Control Panel</Text>
+        <TouchableOpacity onPress={() => setIsModalVisible(true)}>
+          <Text style={{ fontSize: 32, fontFamily: "matt" }}>
+            Control Panel
+          </Text>
+        </TouchableOpacity>
+
+        <Modal visible={isModalVisible} animationType="slide">
+          <View style={styles.modalContainer}>
+            <TextInput
+              placeholder="Enter text"
+              onChangeText={setIpAddress}
+              value={ipAddress}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                console.log("IP address set to", ipAddress);
+
+                setIsModalVisible(false);
+              }}
+            >
+              <Text>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
         <View
           style={{
             flexDirection: "row",
@@ -235,7 +308,7 @@ const Home = () => {
             minWidth: "92%",
           }}
         >
-          <Spacer hSize={10}></Spacer>
+          <Spacer hSize={5} />
           <View style={{ flexDirection: "column", justifyContent: "center" }}>
             <Text style={[styles.sensorTitle, { fontWeight: 400 }]}>
               Moisture
@@ -253,6 +326,7 @@ const Home = () => {
               {currBrightness}%
             </Text>
           </View>
+          <Spacer hSize={10} />
           <Image
             style={[styles.frog]}
             source={require("../../assets/images/gudboi.png")}
@@ -294,10 +368,13 @@ const Home = () => {
 
       {/* This creates all buttons under 'Watering' */}
       <View style={{ flexDirection: "column", alignItems: "left" }}>
-        <Text paddingHorizontal={10} style={{ color: "#838385" }}>
+        <Text
+          paddingHorizontal={10}
+          style={{ color: "#838385", fontFamily: "inter", fontSize: 12 }}
+        >
           WATERING
         </Text>
-        <Spacer vSize={5}></Spacer>
+        <Spacer vSize={2}></Spacer>
         {isAuto ? (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <DefaultButton
@@ -350,10 +427,13 @@ const Home = () => {
       {/* This creates all buttons under 'Lighting' */}
 
       <View style={{ flexDirection: "column", alignItems: "left" }}>
-        <Text paddingHorizontal={10} style={{ color: "#838385" }}>
+        <Text
+          paddingHorizontal={10}
+          style={{ color: "#838385", fontFamily: "inter", fontSize: 12 }}
+        >
           LIGHTING
         </Text>
-        <Spacer vSize={5}></Spacer>
+        <Spacer vSize={2}></Spacer>
         {isAuto ? (
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <DefaultButton
@@ -407,7 +487,7 @@ const Home = () => {
             <DefaultButton
               icon={require("../../assets/images/clock.png")}
               title={"Start Time"}
-              currText={ lightHr  + ":" +  lightMin  + " " +  lightAMPM }
+              currText={lightHr + ":" + lightMin + " " + lightAMPM}
               modalVar={showLightTime}
               setModalVar={setShowLightTime}
             />
@@ -443,9 +523,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   frog: {
-    width: 250,
-    height: 275,
+    width: 195,
+    height: 195,
     resizeMode: "contain",
+    // backgroundColor: 'white',
+    marginTop: -5,
   },
   logo: {
     width: 30,

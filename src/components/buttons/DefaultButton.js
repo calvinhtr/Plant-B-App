@@ -1,8 +1,22 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet, Image } from "react-native";
+import { useState, useEffect } from "react";
 import { Spacer } from "../spacer";
+import axios from 'axios';
 
 const DefaultButton = ({ icon, title, currText, modalVar, setModalVar }) => {
+
+  // const [ipAddress, setIpAddress] = useState('https://mocki.io/v1/d8599467-8921-4597-b58e-a4cf229e7fb7');
+  // // const [data, setData] = useState([]);
+
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(ipAddress); // Replace with your API endpoint
+  //     console.log(response.data); // Handle the response data
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //   }
+  // };
   return (
     <Pressable
       style={({ pressed }) => [
@@ -19,6 +33,8 @@ const DefaultButton = ({ icon, title, currText, modalVar, setModalVar }) => {
       ]}
       onPress={() => {
         setModalVar(true);
+        // fetchData(ipAddress, setData);
+        // fetchData();
       }}
     >
       <View style={styles.button}>

@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Modal, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { Spacer } from "../spacer";
 import Slider from "@react-native-community/slider";
+import { fetchData } from "../../utils/utils";
 
 const ColorPicker = ({
   title,
@@ -13,6 +14,10 @@ const ColorPicker = ({
   setGreenVar,
   blueVar,
   setBlueVar,
+  ipAddress,
+  setMoisture,
+  setLight,
+  endpoint = "",
   buttonText = "Done",
 }) => {
   let [tempRed, setTempRed] = useState(redVar);
@@ -188,6 +193,8 @@ const ColorPicker = ({
                 setRedVar(tempRed);
                 setGreenVar(tempGreen);
                 setBlueVar(tempBlue);
+                const newIp = ipAddress + "/" + endpoint;
+                fetchData(newIp, setMoisture, setLight);
               }}
             >
               <Text

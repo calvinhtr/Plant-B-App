@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Modal, TouchableOpacity } from "react-native";
 import React from "react";
 import WheelPickerExpo from "react-native-wheel-picker-expo";
 import { Spacer } from "../spacer";
+import { fetchData } from "../../utils/utils";
 
 const WheelPicker = ({
   title,
@@ -12,6 +13,10 @@ const WheelPicker = ({
   setShowModal,
   valueVar,
   setValueVar,
+  ipAddress,
+  setMoisture,
+  setLight,
+  endpoint = "",
   buttonText = "Done",
 }) => {
   // Make temp vars to store values before 'Done' is pressed
@@ -31,7 +36,7 @@ const WheelPicker = ({
       <Modal animationType="slide" transparent={true} visible={showModal}>
         <View
           style={{
-            height: "50%",
+            height: 410,
             marginTop: "auto",
             backgroundColor: "white",
             borderTopLeftRadius: 13,
@@ -76,6 +81,7 @@ const WheelPicker = ({
                 items={values.map((name) => ({ label: name, value: "" }))}
                 onChange={({ item }) => (temp = item.label)}
                 fontFamily={"inter"}
+                haptics={true}
               />
               <Text style={{ fontFamily: "inter", fontSize: 23 }}>
                 {rightText}
@@ -93,6 +99,8 @@ const WheelPicker = ({
               onPress={() => {
                 setShowModal(false);
                 setValueVar(temp);
+                const newIp = ipAddress + "/" + endpoint;
+                fetchData(newIp, setMoisture, setLight);
               }}
             >
               <Text

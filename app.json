@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "FirstApp",
-    "slug": "FirstApp",
+    "name": "PlantB",
+    "slug": "PlantB",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/frog_logo.png",
@@ -19,15 +19,21 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/frog_logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.PlantB"
     },
     "web": {
       "favicon": "./assets/iamges/favicon.png"
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "eadba170-32f2-4b92-a38c-1ba9646cca0f"
+      }
+    }
   }
 }

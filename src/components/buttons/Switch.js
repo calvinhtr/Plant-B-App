@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Switch, StyleSheet } from "react-native";
+import React from "react";
+import { Switch } from "react-native";
 
 const SwitchButton = ({isEnabled, toggleSwitch}) => {
 //   const [isEnabled, setIsEnabled] = useState(false);

@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Modal, TouchableOpacity } from "react-native";
 import { React, useState } from "react";
 import { Spacer } from "../spacer";
 import WheelPickerExpo from "react-native-wheel-picker-expo";
+import { fetchData } from "../../utils/utils";
 
 const WheelPicker = ({
   title,
@@ -13,6 +14,10 @@ const WheelPicker = ({
   setMinVar,
   amPMVar,
   setAMPMVar,
+  ipAddress,
+  setMoisture,
+  setLight,
+  endpoint = "",
   buttonText = "Done",
 }) => {
   // Make temp vars to store values before 'Done' is pressed
@@ -30,8 +35,6 @@ const WheelPicker = ({
   for (let i = 10; i <= 59; i++) {
     minArray.push(i.toString());
   }
-  console.log(hrArray);
-  console.log(minArray);
   return (
     <View>
       {/* Background blur modal */}
@@ -47,7 +50,7 @@ const WheelPicker = ({
       <Modal animationType="slide" transparent={true} visible={showModal}>
         <View
           style={{
-            height: "50%",
+            height: 410,
             marginTop: "auto",
             backgroundColor: "white",
             borderTopLeftRadius: 13,
@@ -89,6 +92,7 @@ const WheelPicker = ({
                 items={hrArray.map((name) => ({ label: name, value: "" }))}
                 onChange={({ item }) => (tempHr = item.label)}
                 fontFamily={"inter"}
+                haptics={true}
               />
 
               <WheelPickerExpo
@@ -98,6 +102,7 @@ const WheelPicker = ({
                 items={minArray.map((name) => ({ label: name, value: "" }))}
                 onChange={({ item }) => (tempMin = item.label)}
                 fontFamily={"inter"}
+                haptics={true}
               />
 
               <WheelPickerExpo
@@ -107,6 +112,7 @@ const WheelPicker = ({
                 items={amPM.map((name) => ({ label: name, value: "" }))}
                 onChange={({ item }) => (tempAMPM = item.label)}
                 fontFamily={"inter"}
+                haptics={true}
               />
             </View>
             {/* <View style={{backgroundColor: 'grey', width: '80%', height: 30, marginTop: -110, zIndex: -1}}/> */}
@@ -124,6 +130,8 @@ const WheelPicker = ({
                 setHrVar(tempHr);
                 setMinVar(tempMin);
                 setAMPMVar(tempAMPM);
+                const newIp = ipAddress + "/" + endpoint;
+                fetchData(newIp, setMoisture, setLight);
               }}
             >
               <Text
