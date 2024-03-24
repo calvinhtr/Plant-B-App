@@ -1,16 +1,18 @@
 import { StyleSheet, Text, View, Modal, TouchableOpacity } from "react-native";
-import React from "react";
+import { React, useState } from "react";
 import { Spacer } from "../spacer";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 const FewPicker = ({
   title,
+  subtext,
   showModal,
   setShowModal,
   valueVar,
   setValueVar,
   buttonText = "Done",
 }) => {
+  let [temp, setTemp] = useState(valueVar);
   return (
     <View>
       {/* Background blur modal */}
@@ -54,41 +56,57 @@ const FewPicker = ({
               {title}
             </Text>
 
-            <Spacer vSize={21}/>
+            <Spacer vSize={21} />
 
             <View>
-              <TouchableOpacity style={styles.topButton} onPress={()=>setValueVar("Low")}>
+              <TouchableOpacity
+                style={styles.topButton}
+                onPress={() => setTemp("Low")}
+              >
                 <View style={styles.contentWrapper}>
                   <Text style={styles.buttonText}>Low</Text>
-                  {valueVar == "Low" ? (<Ionicons
-                    name="checkmark-outline"
-                    size={20}
-                    color="#007AFF"
-                  />) : (null)}
+                  {temp == "Low" ? (
+                    <Ionicons
+                      name="checkmark-outline"
+                      size={20}
+                      color="#007AFF"
+                    />
+                  ) : null}
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.midButton} onPress={()=>setValueVar("Medium")}>
+              <TouchableOpacity
+                style={styles.midButton}
+                onPress={() => setTemp("Medium")}
+              >
                 <View style={styles.contentWrapper}>
                   <Text style={styles.buttonText}>Medium</Text>
-                  {valueVar == "Medium" ? (<Ionicons
-                    name="checkmark-outline"
-                    size={20}
-                    color="#007AFF"
-                  />) : (null)}
+                  {temp == "Medium" ? (
+                    <Ionicons
+                      name="checkmark-outline"
+                      size={20}
+                      color="#007AFF"
+                    />
+                  ) : null}
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.botButton} onPress={()=>setValueVar("High")}>
+              <TouchableOpacity
+                style={styles.botButton}
+                onPress={() => setTemp("High")}
+              >
                 <View style={styles.contentWrapper}>
                   <Text style={styles.buttonText}>High</Text>
-                  {valueVar == "High" ? (<Ionicons
-                    name="checkmark-outline"
-                    size={20}
-                    color="#007AFF"
-                  />) : (null)}
+                  {temp == "High" ? (
+                    <Ionicons
+                      name="checkmark-outline"
+                      size={20}
+                      color="#007AFF"
+                    />
+                  ) : null}
                 </View>
               </TouchableOpacity>
             </View>
-
+            <Spacer vSize={5}></Spacer>
+            <Text style={{width: '80%', fontSize: 11, fontFamily: 'inter', color: '#3C3C4399'}}>{subtext}</Text>
             <Spacer vSize={10}></Spacer>
             <TouchableOpacity
               style={{
@@ -100,6 +118,7 @@ const FewPicker = ({
               }}
               onPress={() => {
                 setShowModal(false);
+                setValueVar(temp);
               }}
             >
               <Text
@@ -118,6 +137,7 @@ const FewPicker = ({
               style={{ width: "100%", paddingTop: 16 }}
               onPress={() => {
                 setShowModal(false);
+                setTemp(valueVar)
               }}
             >
               <Text
@@ -147,7 +167,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: "#B9B9BB",
-    alignItems: 'center'
+    alignItems: "center",
   },
   midButton: {
     backgroundColor: "white",
@@ -155,7 +175,7 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: "#B9B9BB",
-    alignItems: 'center'
+    alignItems: "center",
   },
   topButton: {
     backgroundColor: "white",
@@ -164,7 +184,7 @@ const styles = StyleSheet.create({
     borderColor: "#B9B9BB",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    alignItems: 'center'
+    alignItems: "center",
   },
   buttonText: {
     paddingVertical: 4,
@@ -176,6 +196,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: '90%'
+    width: "90%",
   },
 });

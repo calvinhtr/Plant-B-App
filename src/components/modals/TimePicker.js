@@ -1,21 +1,37 @@
 import { StyleSheet, Text, View, Modal, TouchableOpacity } from "react-native";
-import React from "react";
-import WheelPickerExpo from "react-native-wheel-picker-expo";
+import { React, useState } from "react";
 import { Spacer } from "../spacer";
+import WheelPickerExpo from "react-native-wheel-picker-expo";
 
 const WheelPicker = ({
   title,
-  leftText,
-  rightText,
-  values,
   showModal,
   setShowModal,
-  valueVar,
-  setValueVar,
+  hrVar,
+  setHrVar,
+  minVar,
+  setMinVar,
+  amPMVar,
+  setAMPMVar,
   buttonText = "Done",
 }) => {
   // Make temp vars to store values before 'Done' is pressed
-  let temp = 0;
+  let tempHr = "6";
+  let tempMin = "00";
+  let tempAMPM = "AM";
+
+  const hrArray = ["12"];
+  const minArray = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09"];
+  const amPM = ["AM", "PM"];
+
+  for (let i = 1; i <= 11; i++) {
+    hrArray.push(i.toString());
+  }
+  for (let i = 10; i <= 59; i++) {
+    minArray.push(i.toString());
+  }
+  console.log(hrArray);
+  console.log(minArray);
   return (
     <View>
       {/* Background blur modal */}
@@ -66,21 +82,34 @@ const WheelPicker = ({
                 paddingTop: 30,
               }}
             >
-              <Text style={{ fontFamily: "inter", fontSize: 23 }}>
-                {leftText}
-              </Text>
               <WheelPickerExpo
                 height={200}
-                width={75}
-                initialSelectedIndex={valueVar - 1}
-                items={values.map((name) => ({ label: name, value: "" }))}
-                onChange={({ item }) => (temp = item.label)}
+                width={60}
+                initialSelectedIndex={hrArray.indexOf(hrVar)}
+                items={hrArray.map((name) => ({ label: name, value: "" }))}
+                onChange={({ item }) => (tempHr = item.label)}
                 fontFamily={"inter"}
               />
-              <Text style={{ fontFamily: "inter", fontSize: 23 }}>
-                {rightText}
-              </Text>
+
+              <WheelPickerExpo
+                height={200}
+                width={60}
+                initialSelectedIndex={minArray.indexOf(minVar)}
+                items={minArray.map((name) => ({ label: name, value: "" }))}
+                onChange={({ item }) => (tempMin = item.label)}
+                fontFamily={"inter"}
+              />
+
+              <WheelPickerExpo
+                height={200}
+                width={60}
+                initialSelectedIndex={amPM.indexOf(amPMVar)}
+                items={amPM.map((name) => ({ label: name, value: "" }))}
+                onChange={({ item }) => (tempAMPM = item.label)}
+                fontFamily={"inter"}
+              />
             </View>
+            {/* <View style={{backgroundColor: 'grey', width: '80%', height: 30, marginTop: -110, zIndex: -1}}/> */}
             <Spacer vSize={10}></Spacer>
             <TouchableOpacity
               style={{
@@ -92,7 +121,9 @@ const WheelPicker = ({
               }}
               onPress={() => {
                 setShowModal(false);
-                setValueVar(temp);
+                setHrVar(tempHr);
+                setMinVar(tempMin);
+                setAMPMVar(tempAMPM);
               }}
             >
               <Text

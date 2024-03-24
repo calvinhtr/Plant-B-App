@@ -1,14 +1,6 @@
-import { React, useEffect, useCallback, useState } from "react";
+import { React, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  Dimensions,
-  Modal,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, Text, Image, Dimensions } from "react-native";
 import {
   DefaultButton,
   SwitchButton,
@@ -16,7 +8,12 @@ import {
 } from "../components/buttons";
 import { Spacer, VerticalSpacer } from "../components/spacer";
 import Colors from "../../constants/Colors";
-import { WheelPicker, FewPicker } from "../components/modals";
+import {
+  WheelPicker,
+  FewPicker,
+  ColorPicker,
+  TimePicker,
+} from "../components/modals";
 
 const Home = () => {
   // Initialize state vars
@@ -32,14 +29,34 @@ const Home = () => {
   const [showWaterAmt, setShowWaterAmt] = useState(false);
   const [waterAmt, setWaterAmt] = useState(50);
 
-  const [showLightSen, setShowLightSen] = useState(false);
-  const [lightSen, setLightSen] = useState('Medium');
+  const [showLightInt, setShowLightInt] = useState(false);
+  const [lightInt, setLightInt] = useState("Medium");
 
   const [showLightingHr, setShowLightingHr] = useState(false);
   const [lightingHr, setLightingHr] = useState(16);
 
   const [showWaterAmtManual, setShowWaterAmtManual] = useState(false);
   const [waterAmtManual, setWaterAmtManual] = useState(50);
+
+  const [showLightTime, setShowLightTime] = useState(false);
+  const [lightTime, setLightTime] = useState(5);
+
+  const [red, setRed] = useState(150);
+  const [green, setGreen] = useState(0);
+  const [blue, setBlue] = useState(30);
+  const [showColorAuto, setShowColorAuto] = useState(false);
+
+  const [redManual, setRedManual] = useState(150);
+  const [greenManual, setGreenManual] = useState(0);
+  const [blueManual, setBlueManual] = useState(30);
+  const [showColorManual, setShowColorManual] = useState(false);
+
+  const [lightHr, setLightHr] = useState("6");
+  const [lightMin, setLightMin] = useState("00");
+  const [lightAMPM, setLightAMPM] = useState("AM");
+
+  const [currMoisture, setCurrMoisture] = useState(40);
+  const [currBrightness, setCurrBrightness] = useState(80);
 
   const toggleAuto = () => {
     // Toggle isAuto state
@@ -48,6 +65,29 @@ const Home = () => {
     // Set other states to false
     setPump(false);
     setLight(false);
+  };
+
+  const convertToHex = (red, green, blue) => {
+    let res = "#";
+    res = res.concat(
+      Math.floor(red / 16)
+        .toString(16)
+        .toUpperCase()
+    );
+    res = res.concat((red % 16).toString(16).toUpperCase());
+    res = res.concat(
+      Math.floor(green / 16)
+        .toString(16)
+        .toUpperCase()
+    );
+    res = res.concat((green % 16).toString(16).toUpperCase());
+    res = res.concat(
+      Math.floor(blue / 16)
+        .toString(16)
+        .toUpperCase()
+    );
+    res = res.concat((blue % 16).toString(16).toUpperCase());
+    return res;
   };
   const numbersArray = [];
   for (let i = 1; i <= 300; i++) {
@@ -58,9 +98,22 @@ const Home = () => {
     hrsArray.push(i);
   }
 
+  const statusColor =
+    showLightInt ||
+    showLightingHr ||
+    showWaterAmtManual ||
+    showWateringFreq ||
+    showWaterAmt ||
+    showColorAuto ||
+    showColorManual ||
+    showLightTime
+      ? "#787474"
+      : "";
+
+  const hexColor = convertToHex(red, green, blue);
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
+      <StatusBar style="auto" backgroundColor={statusColor} />
       <WheelPicker
         title={"Watering Frequency"}
         leftText={"Every"}
@@ -103,14 +156,50 @@ const Home = () => {
         buttonText="Water now"
       />
       <FewPicker
-        title={"Light Sensitivity"}
+        title={"Light Intensity"}
+        subtext={
+          "Higher light intensity means the plant needs more sunlight, so the plant light needs a higher ambient light level to turn off."
+        }
+        showModal={showLightInt}
+        setShowModal={setShowLightInt}
+        valueVar={lightInt}
+        setValueVar={setLightInt}
+      />
+      <ColorPicker
+        title={"Light Colour"}
+        showModal={showColorAuto}
+        setShowModal={setShowColorAuto}
+        redVar={red}
+        setRedVar={setRed}
+        blueVar={blue}
+        setBlueVar={setBlue}
+        greenVar={green}
+        setGreenVar={setGreen}
+      />
+      <ColorPicker
+        title={"Light Colour"}
+        showModal={showColorManual}
+        setShowModal={setShowColorManual}
+        redVar={redManual}
+        setRedVar={setRedManual}
+        blueVar={blueManual}
+        setBlueVar={setBlueManual}
+        greenVar={greenManual}
+        setGreenVar={setGreenManual}
+      />
+      <TimePicker
+        title={"Start Time"}
         leftText={""}
         rightText={"ml"}
         values={numbersArray}
-        showModal={showLightSen}
-        setShowModal={setShowLightSen}
-        valueVar={lightSen}
-        setValueVar={setLightSen}
+        showModal={showLightTime}
+        setShowModal={setShowLightTime}
+        hrVar={lightHr}
+        setHrVar={setLightHr}
+        minVar={lightMin}
+        setMinVar={setLightMin}
+        amPMVar={lightAMPM}
+        setAMPMVar={setLightAMPM}
       />
 
       {/* Create the logo area */}
@@ -151,14 +240,18 @@ const Home = () => {
             <Text style={[styles.sensorTitle, { fontWeight: 400 }]}>
               Moisture
             </Text>
-            <Text style={[styles.sensorValue, { fontWeight: 700 }]}>40%</Text>
+            <Text style={[styles.sensorValue, { fontWeight: 700 }]}>
+              {currMoisture}%
+            </Text>
 
             <Spacer vSize={10}></Spacer>
 
             <Text style={[styles.sensorTitle, { fontWeight: 400 }]}>
               Brightness
             </Text>
-            <Text style={[styles.sensorValue, { fontWeight: 700 }]}>80%</Text>
+            <Text style={[styles.sensorValue, { fontWeight: 700 }]}>
+              {currBrightness}%
+            </Text>
           </View>
           <Image
             style={[styles.frog]}
@@ -244,7 +337,10 @@ const Home = () => {
               ></SwitchButton>
               <Spacer hSize={5}></Spacer>
             </View>
-            <OtherButton title="Water amount" onPress={() => setShowWaterAmtManual(true)} />
+            <OtherButton
+              title="Water amount"
+              onPress={() => setShowWaterAmtManual(true)}
+            />
           </View>
         )}
       </View>
@@ -262,16 +358,18 @@ const Home = () => {
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <DefaultButton
               icon={require("../../assets/images/lightbulb.png")}
-              title={"Light Sensitivity"}
-              currText={lightSen}
-              modalVar={showLightSen}
-              setModalVar={setShowLightSen}
+              title={"Light Intensity"}
+              currText={lightInt}
+              modalVar={showLightInt}
+              setModalVar={setShowLightInt}
             />
             <Spacer hSize={5}></Spacer>
             <DefaultButton
               icon={require("../../assets/images/palette.png")}
               title={"Light Colour"}
-              currText={"F5D418"}
+              currText={hexColor}
+              modalVar={showColorAuto}
+              setModalVar={setShowColorAuto}
             />
           </View>
         ) : (
@@ -295,7 +393,10 @@ const Home = () => {
               ></SwitchButton>
               <Spacer hSize={5}></Spacer>
             </View>
-            <OtherButton title="Light colour" onPress={() => console.log("Light colour")} />
+            <OtherButton
+              title="Light colour"
+              onPress={() => setShowColorManual(true)}
+            />
           </View>
         )}
 
@@ -306,7 +407,9 @@ const Home = () => {
             <DefaultButton
               icon={require("../../assets/images/clock.png")}
               title={"Start Time"}
-              currText={"7:00 AM"}
+              currText={ lightHr  + ":" +  lightMin  + " " +  lightAMPM }
+              modalVar={showLightTime}
+              setModalVar={setShowLightTime}
             />
             <Spacer hSize={5}></Spacer>
             <DefaultButton
