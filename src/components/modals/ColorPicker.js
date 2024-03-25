@@ -17,6 +17,8 @@ const ColorPicker = ({
   ipAddress,
   setMoisture,
   setLight,
+  sus,
+  lightOn = null,
   endpoint = "",
   buttonText = "Done",
 }) => {
@@ -193,8 +195,12 @@ const ColorPicker = ({
                 setRedVar(tempRed);
                 setGreenVar(tempGreen);
                 setBlueVar(tempBlue);
-                const newIp = ipAddress + "/" + endpoint;
-                fetchData(newIp, setMoisture, setLight);
+                if (lightOn != false) {
+                  // send req
+                  const newIp = ipAddress + "/" + endpoint + "/" + String(tempRed).padStart(3, '0') + String(tempGreen).padStart(3, '0') + String(tempBlue).padStart(3, '0');
+                  fetchData(newIp, sus, setMoisture, setLight);
+                } 
+                
               }}
             >
               <Text

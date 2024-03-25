@@ -1,19 +1,21 @@
 import { StyleSheet, Text, View, Modal, TouchableOpacity } from "react-native";
-import { React, useState } from "react";
-import { Spacer } from "../spacer";
+import React from "react";
 import WheelPickerExpo from "react-native-wheel-picker-expo";
+import Slider from "@react-native-community/slider";
+import { Spacer } from "../spacer";
 import { fetchData } from "../../utils/utils";
 
-const WheelPicker = ({
+const WheelSlidePicker = ({
   title,
+  leftText,
+  rightText,
+  values,
   showModal,
   setShowModal,
-  hrVar,
-  setHrVar,
-  minVar,
-  setMinVar,
-  amPMVar,
-  setAMPMVar,
+  valueVar,
+  setValueVar,
+  moistureVar,
+  setMoistureVar,
   ipAddress,
   setMoisture,
   setLight,
@@ -22,20 +24,8 @@ const WheelPicker = ({
   buttonText = "Done",
 }) => {
   // Make temp vars to store values before 'Done' is pressed
-  let tempHr = "6";
-  let tempMin = "00";
-  let tempAMPM = "AM";
-
-  const hrArray = ["12"];
-  const minArray = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09"];
-  const amPM = ["AM", "PM"];
-
-  for (let i = 1; i <= 11; i++) {
-    hrArray.push(i.toString());
-  }
-  for (let i = 10; i <= 59; i++) {
-    minArray.push(i.toString());
-  }
+  let temp = 0;
+  let tempMoisture = moistureVar;
   return (
     <View>
       {/* Background blur modal */}
@@ -51,7 +41,7 @@ const WheelPicker = ({
       <Modal animationType="slide" transparent={true} visible={showModal}>
         <View
           style={{
-            height: 410,
+            height: 510,
             marginTop: "auto",
             backgroundColor: "white",
             borderTopLeftRadius: 13,
@@ -86,38 +76,62 @@ const WheelPicker = ({
                 paddingTop: 30,
               }}
             >
+              <Text style={{ fontFamily: "inter", fontSize: 23 }}>
+                {leftText}
+              </Text>
               <WheelPickerExpo
                 height={200}
-                width={60}
-                initialSelectedIndex={hrArray.indexOf(hrVar)}
-                items={hrArray.map((name) => ({ label: name, value: "" }))}
-                onChange={({ item }) => (tempHr = item.label)}
+                width={75}
+                initialSelectedIndex={valueVar - 1}
+                items={values.map((name) => ({ label: name, value: "" }))}
+                onChange={({ item }) => (temp = item.label)}
                 fontFamily={"inter"}
                 haptics={true}
               />
-
-              <WheelPickerExpo
-                height={200}
-                width={60}
-                initialSelectedIndex={minArray.indexOf(minVar)}
-                items={minArray.map((name) => ({ label: name, value: "" }))}
-                onChange={({ item }) => (tempMin = item.label)}
-                fontFamily={"inter"}
-                haptics={true}
-              />
-
-              <WheelPickerExpo
-                height={200}
-                width={60}
-                initialSelectedIndex={amPM.indexOf(amPMVar)}
-                items={amPM.map((name) => ({ label: name, value: "" }))}
-                onChange={({ item }) => (tempAMPM = item.label)}
-                fontFamily={"inter"}
-                haptics={true}
-              />
+              <Text style={{ fontFamily: "inter", fontSize: 23 }}>
+                {rightText}
+              </Text>
             </View>
-            {/* <View style={{backgroundColor: 'grey', width: '80%', height: 30, marginTop: -110, zIndex: -1}}/> */}
             <Spacer vSize={10}></Spacer>
+
+            <View style={{ width: "100%", alignItems: "center" }}>
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                  width: "80%",
+                }}
+              >
+                <Text style={{ fontFamily: "inter", color: "#3C3C4399", fontSize: 12 }}>
+                  MOISTURE THRESHOLD
+                </Text>
+                <Text style={{ fontFamily: "inter", color: "#35322D", fontSize: 12 }}>
+                  {tempMoisture}
+                </Text>
+              </View>
+              <Spacer vSize={3} />
+              <View
+                style={{
+                  backgroundColor: "#F6F6F6",
+                  padding: 12,
+                  width: "90%",
+                  borderRadius: 10,
+                }}
+              >
+                <Slider
+                  minimumValue={0}
+                  maximumValue={100}
+                  minimumTrackTintColor="#828AAA"
+                  thumbTintColor="#35322D"
+                  value={moistureVar}
+                  onValueChange={(newVal) => {
+                    setMoistureVar(newVal);
+                  }}
+                  step={1}
+                />
+              </View>
+              <Spacer vSize={15} />
+            </View>
             <TouchableOpacity
               style={{
                 width: "80%",
@@ -128,11 +142,11 @@ const WheelPicker = ({
               }}
               onPress={() => {
                 setShowModal(false);
-                setHrVar(tempHr);
-                setMinVar(tempMin);
-                setAMPMVar(tempAMPM);
-                const newIp = ipAddress + "/" + endpoint + "/" + tempHr;
-                fetchData(newIp, sus, setMoisture, setLight);
+                setValueVar(temp);
+                const newIp = ipAddress + "/" + endpoint + "/" + temp + "";
+                const moistureIP = ipAddress + "/setMoistThresh/" + tempMoisture;
+                fetchData(newIp);
+                fetchData(moistureIP, sus, setMoisture, setLight);
               }}
             >
               <Text
@@ -170,6 +184,6 @@ const WheelPicker = ({
   );
 };
 
-export default WheelPicker;
+export default WheelSlidePicker;
 
 const styles = StyleSheet.create({});

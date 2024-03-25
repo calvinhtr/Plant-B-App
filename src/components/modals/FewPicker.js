@@ -14,6 +14,7 @@ const FewPicker = ({
   ipAddress,
   setMoisture,
   setLight,
+  sus,
   endpoint = "",
   buttonText = "Done",
 }) => {
@@ -66,11 +67,11 @@ const FewPicker = ({
             <View>
               <TouchableOpacity
                 style={styles.topButton}
-                onPress={() => setTemp("Low")}
+                onPress={() => setTemp(50)}
               >
                 <View style={styles.contentWrapper}>
                   <Text style={styles.buttonText}>Low</Text>
-                  {temp == "Low" ? (
+                  {temp == 50 ? (
                     <Ionicons
                       name="checkmark-outline"
                       size={20}
@@ -81,11 +82,11 @@ const FewPicker = ({
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.midButton}
-                onPress={() => setTemp("Medium")}
+                onPress={() => setTemp(500)}
               >
                 <View style={styles.contentWrapper}>
                   <Text style={styles.buttonText}>Medium</Text>
-                  {temp == "Medium" ? (
+                  {temp == 500 ? (
                     <Ionicons
                       name="checkmark-outline"
                       size={20}
@@ -96,11 +97,11 @@ const FewPicker = ({
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.botButton}
-                onPress={() => setTemp("High")}
+                onPress={() => setTemp(800)}
               >
                 <View style={styles.contentWrapper}>
                   <Text style={styles.buttonText}>High</Text>
-                  {temp == "High" ? (
+                  {temp == 800 ? (
                     <Ionicons
                       name="checkmark-outline"
                       size={20}
@@ -124,8 +125,8 @@ const FewPicker = ({
               onPress={() => {
                 setShowModal(false);
                 setValueVar(temp);
-                const newIp = ipAddress + "/" + endpoint;
-                fetchData(newIp, setMoisture, setLight);
+                const newIp = ipAddress + "/" + endpoint + "/" + temp.toString();
+                fetchData(newIp, sus, setMoisture, setLight);
               }}
             >
               <Text

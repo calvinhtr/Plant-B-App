@@ -22,6 +22,7 @@ import {
   FewPicker,
   ColorPicker,
   TimePicker,
+  WheelSlidePicker,
 } from "../components/modals";
 import { fetchData } from "../utils/utils";
 
@@ -35,12 +36,13 @@ const Home = () => {
 
   const [showWateringFreq, setShowWateringFreq] = useState(false);
   const [waterFreq, setWaterFreq] = useState(7);
+  const [waterThresh, setWaterThresh] = useState(20);
 
   const [showWaterAmt, setShowWaterAmt] = useState(false);
   const [waterAmt, setWaterAmt] = useState(50);
 
   const [showLightInt, setShowLightInt] = useState(false);
-  const [lightInt, setLightInt] = useState("Medium");
+  const [lightInt, setLightInt] = useState(500);
 
   const [showLightingHr, setShowLightingHr] = useState(false);
   const [lightingHr, setLightingHr] = useState(16);
@@ -64,23 +66,29 @@ const Home = () => {
   const [lightAMPM, setLightAMPM] = useState("AM");
 
   const [currMoisture, setCurrMoisture] = useState(40);
-  const [currBrightness, setCurrBrightness] = useState(80);
+  const [currBrightness, setCurrBrightness] = useState(110);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [ipAddress, setIpAddress] = useState(
-    "http://192.168.43.254"
-  );
+  const [ipAddress, setIpAddress] = useState("http://172.20.10.9");
+
+  const [sus, setSus] = useState("zero");
+
   // http://192.168.43.254
 
   const toggleAuto = () => {
     // Toggle isAuto state
     setIsAuto((previousState) => !previousState);
-    const address = isAuto ? (ipAddress + "/autoOff") : (ipAddress + "/autoOn")
-    fetchData(address);
-
-    // Set other states to false
-    setPump(false);
-    setLight(false);
+    const address = isAuto ? ipAddress + "/autoOff" : ipAddress + "/autoOn";
+    fetchData(address, sus, setCurrMoisture, setCurrBrightness);
+    // Set states to false
+    if (pumpOn) {
+      setPump(false);
+      fetchData(ipAddress + "/motorOff");
+    }
+    if (lightOn) {
+      setLight(false);
+      fetchData(ipAddress + "/ledOff");
+    }
   };
 
   const convertToHex = (red, green, blue) => {
@@ -131,7 +139,7 @@ const Home = () => {
   return (
     <View style={[styles.container]}>
       <StatusBar style="auto" backgroundColor={statusColor} />
-      <WheelPicker
+      <WheelSlidePicker
         title={"Watering Frequency"}
         leftText={"Every"}
         rightText={"days"}
@@ -143,7 +151,10 @@ const Home = () => {
         ipAddress={ipAddress}
         setMoisture={setCurrMoisture}
         setLight={setCurrBrightness}
-        // endpoint={"setWaterInt"}
+        moistureVar={waterThresh}
+        setMoistureVar={setWaterThresh}
+        sus={sus}
+        endpoint={"setWaterInt"}
       />
       <WheelPicker
         title={"Water Amount"}
@@ -157,7 +168,8 @@ const Home = () => {
         ipAddress={ipAddress}
         setMoisture={setCurrMoisture}
         setLight={setCurrBrightness}
-        // endpoint={"setWaterAmt"}
+        sus={sus}
+        endpoint={"setWaterAmt"}
       />
       <WheelPicker
         title={"Lighting Length"}
@@ -171,7 +183,8 @@ const Home = () => {
         ipAddress={ipAddress}
         setMoisture={setCurrMoisture}
         setLight={setCurrBrightness}
-        // endpoint={"setLightHours"}
+        sus={sus}
+        endpoint={"setLightHours"}
       />
       <WheelPicker
         title={"Water Amount"}
@@ -186,7 +199,8 @@ const Home = () => {
         ipAddress={ipAddress}
         setMoisture={setCurrMoisture}
         setLight={setCurrBrightness}
-        // endpoint={"setWaterAmt"}
+        sus={sus}
+        endpoint={"pumpVar"}
       />
       <FewPicker
         title={"Light Intensity"}
@@ -200,7 +214,8 @@ const Home = () => {
         ipAddress={ipAddress}
         setMoisture={setCurrMoisture}
         setLight={setCurrBrightness}
-        // endpoint={"setWaterAmt"}
+        sus={sus}
+        endpoint={"setLightThresh"}
       />
       <ColorPicker
         title={"Light Colour"}
@@ -215,7 +230,8 @@ const Home = () => {
         ipAddress={ipAddress}
         setMoisture={setCurrMoisture}
         setLight={setCurrBrightness}
-        endpoint={"ledR"}
+        sus={sus}
+        endpoint={"setLEDAuto"}
       />
       <ColorPicker
         title={"Light Colour"}
@@ -229,7 +245,10 @@ const Home = () => {
         setGreenVar={setGreenManual}
         ipAddress={ipAddress}
         setMoisture={setCurrMoisture}
-        setLight={setLight}
+        setLight={setCurrBrightness}
+        sus={sus}
+        endpoint={"setLED"}
+        lightOn={lightOn}
       />
       <TimePicker
         title={"Start Time"}
@@ -247,7 +266,8 @@ const Home = () => {
         ipAddress={ipAddress}
         setMoisture={setCurrMoisture}
         setLight={setCurrBrightness}
-        // endpoint={"ledR"}
+        sus={sus}
+        endpoint={"setLightStart"}
       />
 
       {/* Create the logo area */}
@@ -264,16 +284,18 @@ const Home = () => {
             style={styles.logo}
             source={require("../../assets/images/frog_logo.png")}
           />
-          <Text
-            style={{
-              fontFamily: "unblock",
-              paddingTop: 12,
-              paddingLeft: 5,
-              fontSize: 18,
-            }}
-          >
-            PLANT B
-          </Text>
+          <TouchableOpacity onPress={() => setSus("zero")} activeOpacity={1}>
+            <Text
+              style={{
+                fontFamily: "unblock",
+                paddingTop: 12,
+                paddingLeft: 5,
+                fontSize: 18,
+              }}
+            >
+              PLANT B
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity onPress={() => setIsModalVisible(true)}>
@@ -313,25 +335,44 @@ const Home = () => {
             <Text style={[styles.sensorTitle, { fontWeight: 400 }]}>
               Moisture
             </Text>
-            <Text style={[styles.sensorValue, { fontWeight: 700 }]}>
-              {currMoisture}%
-            </Text>
+            <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+              <TouchableOpacity onPress={() => setSus("low")} activeOpacity={1}>
+                <Text style={[styles.sensorValue, { fontWeight: 700 }]}>
+                  {currMoisture}
+                </Text>
+              </TouchableOpacity>
+              <Spacer hSize={2} />
+              <Text style={{ fontFamily: "inter", fontSize: 15 }}>%</Text>
+            </View>
 
             <Spacer vSize={10}></Spacer>
 
             <Text style={[styles.sensorTitle, { fontWeight: 400 }]}>
               Brightness
             </Text>
-            <Text style={[styles.sensorValue, { fontWeight: 700 }]}>
-              {currBrightness}%
-            </Text>
+            <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+              <TouchableOpacity onPress={() => setSus("high")} activeOpacity={1}>
+                <Text style={[styles.sensorValue, { fontWeight: 700 }]}>
+                  {currBrightness}
+                </Text>
+              </TouchableOpacity>
+              <Spacer hSize={2} />
+              <Text style={{ fontFamily: "inter", fontSize: 15 }}>lx</Text>
+            </View>
           </View>
           <Spacer hSize={10} />
-          <Image
-            style={[styles.frog]}
-            source={require("../../assets/images/gudboi.png")}
-            marginLeft={10}
-          />
+          <TouchableOpacity
+            onPress={() =>
+              fetchData(ipAddress, sus, setCurrMoisture, setCurrBrightness)
+            }
+            activeOpacity={1}
+          >
+            <Image
+              style={[styles.frog]}
+              source={require("../../assets/images/gudboi.png")}
+              marginLeft={10}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -410,13 +451,21 @@ const Home = () => {
               </Text>
               <SwitchButton
                 isEnabled={pumpOn}
-                toggleSwitch={() => setPump((previousState) => !previousState)}
+                toggleSwitch={() => {
+                  setPump((previousState) => !previousState);
+                  const address = pumpOn
+                    ? ipAddress + "/motorOff"
+                    : ipAddress + "/motorOn";
+                  fetchData(address, sus, setCurrMoisture, setCurrBrightness);
+                }}
               ></SwitchButton>
               <Spacer hSize={5}></Spacer>
             </View>
             <OtherButton
               title="Water amount"
-              onPress={() => setShowWaterAmtManual(true)}
+              onPress={() => {
+                setShowWaterAmtManual(true);
+              }}
             />
           </View>
         )}
@@ -439,7 +488,9 @@ const Home = () => {
             <DefaultButton
               icon={require("../../assets/images/lightbulb.png")}
               title={"Light Intensity"}
-              currText={lightInt}
+              currText={
+                lightInt == 50 ? "Low" : lightInt == 500 ? "Medium" : "High"
+              }
               modalVar={showLightInt}
               setModalVar={setShowLightInt}
             />
@@ -469,7 +520,17 @@ const Home = () => {
               </Text>
               <SwitchButton
                 isEnabled={lightOn}
-                toggleSwitch={() => setLight((previousState) => !previousState)}
+                toggleSwitch={() => {
+                  setLight((previousState) => !previousState);
+                  const address = lightOn
+                    ? ipAddress + "/ledOff"
+                    : ipAddress +
+                      "/setLED/" +
+                      String(redManual).padStart(3, "0") +
+                      String(greenManual).padStart(3, "0") +
+                      String(blueManual).padStart(3, "0");
+                  fetchData(address, sus, setCurrMoisture, setCurrBrightness);
+                }}
               ></SwitchButton>
               <Spacer hSize={5}></Spacer>
             </View>

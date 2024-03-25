@@ -16,6 +16,7 @@ const WheelPicker = ({
   ipAddress,
   setMoisture,
   setLight,
+  sus,
   endpoint = "",
   buttonText = "Done",
 }) => {
@@ -99,8 +100,8 @@ const WheelPicker = ({
               onPress={() => {
                 setShowModal(false);
                 setValueVar(temp);
-                const newIp = ipAddress + "/" + endpoint;
-                fetchData(newIp, setMoisture, setLight);
+                const newIp = ipAddress + "/" + endpoint + "/" + temp + "";
+                fetchData(newIp, sus, setMoisture, setLight);
               }}
             >
               <Text
